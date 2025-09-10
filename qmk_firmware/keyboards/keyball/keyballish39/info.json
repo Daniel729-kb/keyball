@@ -1,0 +1,7 @@
+{
+  "usb": { "vid": "0x5957", "pid": "0x0201", "device_version": "1.0.0" },
+  "manufacturer": "Keyball",
+  "keyboard_name": "Keyballish39",
+  "rgblight": { "driver": "ws2812" }
+}
+
