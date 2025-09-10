@@ -1,0 +1,39 @@
+name: Build keyballish39 split (left/right)
+
+on:
+  push:
+    paths:
+      - 'qmk_firmware/keyboards/keyball/keyballish39/**'
+      - 'keyballish39/**'
+      - 'keyball/.github/workflows/build-keyballish39-split.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        keymap: [left, right]
+    container:
+      image: ghcr.io/qmk/qmk_cli:latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Checkout qmk_firmware
+        uses: ./.github/actions/checkout-qmk_firmware
+
+      - name: Link keyboard sources
+        run: ln -s $(pwd)/qmk_firmware/keyboards/keyball __qmk__/keyboards/keyball
+
+      - name: Install python deps
+        run: /usr/bin/python3 -m pip install -r __qmk__/requirements.txt
+
+      - name: Compile ${{ matrix.keymap }}
+        run: qmk compile -j 4 -kb keyball/keyballish39 -km ${{ matrix.keymap }}
+
+      - name: Upload ${{ matrix.keymap }} firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: keyballish39-${{ matrix.keymap }}-firmware
+          path: __qmk__/*.hex

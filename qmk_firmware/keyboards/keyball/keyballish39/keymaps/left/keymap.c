@@ -1,19 +1,18 @@
-/* VIA keymap with one-time EEPROM handedness setters */
+/* Left half keymap - auto-sets handedness on boot */
 
 #include QMK_KEYBOARD_H
 #include "quantum.h"
 #include "eeconfig.h"
 
-enum custom_keycodes {
-    HAND_LEFT = SAFE_RANGE,
-    HAND_RIGHT,
-};
+// Auto-set handedness to left on boot
+void keyboard_post_init_user(void) {
+    eeconfig_update_handedness(true);  // left
+}
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  // keymap for default (VIA)
   [0] = LAYOUT_universal(
-    HAND_LEFT, KC_W     , KC_E     , KC_R     , KC_T     ,                            KC_Y     , KC_U     , KC_I     , KC_O     , HAND_RIGHT,
+    KC_Q     , KC_W     , KC_E     , KC_R     , KC_T     ,                            KC_Y     , KC_U     , KC_I     , KC_O     , KC_P     ,
     KC_A     , KC_S     , KC_D     , KC_F     , KC_G     ,                            KC_H     , KC_J     , KC_K     , KC_L     , KC_MINS  ,
     KC_Z     , KC_X     , KC_C     , KC_V     , KC_B     ,                            KC_N     , KC_M     , KC_COMM  , KC_DOT   , KC_SLSH  ,
     KC_LCTL  , KC_LGUI  , KC_LALT  ,LSFT_T(KC_LNG2),LT(1,KC_SPC),LT(3,KC_LNG1),KC_BSPC,LT(2,KC_ENT),LSFT_T(KC_LNG2),KC_RALT,KC_RGUI, KC_RSFT
@@ -55,19 +54,3 @@ void oledkit_render_info_user(void) {
     keyball_oled_render_layerinfo();
 }
 #endif
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (!record->event.pressed) return true;
-    switch (keycode) {
-        case HAND_LEFT:
-            eeconfig_update_handedness(true);
-            reset_keyboard();
-            return false;
-        case HAND_RIGHT:
-            eeconfig_update_handedness(false);
-            reset_keyboard();
-            return false;
-    }
-    return true;
-}
-
